@@ -8,7 +8,7 @@ app = FastAPI()
 binretriever = BinRetriever()
 
 @app.get("/bincoords/")
-async def output_bin_coords(lat: int = 91, lon: int = 181, rng_lat: int = 0.001, returnall: bool = False):
+async def output_bin_coords(lat: float = 91, lon: float = 181, rng_lat: float = 0.001, returnall: bool = False):
 	return_value = False
 	if returnall:
 		return_value = binretriever.bins
