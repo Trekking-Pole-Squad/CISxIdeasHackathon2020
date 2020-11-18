@@ -2,10 +2,12 @@
 
 from fastapi import FastAPI
 from binretriever import *
+from users import *
 import asyncio
 
 app = FastAPI()
 binretriever = BinRetriever()
+users = Users()
 
 @app.get("/bincoords/")
 async def output_bin_coords(lat: float = 91, lon: float = 181, rng_lat: float = 0.001, returnall: bool = False):
@@ -16,7 +18,12 @@ async def output_bin_coords(lat: float = 91, lon: float = 181, rng_lat: float = 
 		return_value = binretriever.near(lat, lon, rng_lat)
 	return return_value
 
-
+@app.get("/inventory/")
+async def output_user_inventory(id: int = 0):
+	return_value = False
+	return_value = users.get_inventory(id)
+	return return_value
+	
 
 if __name__ == "__main__":
 	import uvicorn
