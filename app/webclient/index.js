@@ -1,5 +1,19 @@
 "use strict"
 
+// extremely quick "authentication" prompt
+// server and consequently client MUST be reworked for actual security
+var token = ""
+fetch("/gettoken/?" + new URLSearchParams({
+	username: prompt("Username"),
+	sha512_password: prompt("Password")
+})).then(r => r.json()).then(r => {
+	if (!r.token) {
+		alert("Login fail");
+	} else {
+		token = r.token;
+	}
+})
+
 var view = new ol.View({
 	center: ol.proj.fromLonLat([114.119,22.337]),
 	resolution: 80,
