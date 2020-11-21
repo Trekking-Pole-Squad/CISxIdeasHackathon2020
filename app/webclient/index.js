@@ -104,6 +104,30 @@ fetch("./point_ids.json")
 		buildingLayer.setSource(new ol.source.Vector({features:bs}));
 	});
 
+
+var plotInfoDiv = document.createElement("DIV");
+plotInfoDiv.setAttribute("class","plot-info-container")
+var plotInfoOverlay = new ol.Overlay({
+	element: plotInfoDiv
+});
+
+var select = new ol.interaction.Select({
+	toggleCondition: ol.events.condition.never,
+	layers: [buildingLayer]
+})
+select.on("select", function(evt) {
+	// only one feature selected/deselected at once
+	if (evt.selected.length > 0) {
+		plotInfoOverlay.setPosition(
+			evt.selected[0].getGeometry().getCoordinates()
+		);
+	}
+	else if (evt.deselected.length > 0) {
+		plotInfoOverlay.setPosition(undefined);
+	}
+});
+
+
 var map = new ol.Map({
 	target: "map",
 	layers: [
@@ -118,5 +142,7 @@ var map = new ol.Map({
 		binPinLayer,
 		buildingLayer
 	],
-	view: view
+	view: view,
+	overlays: [plotInfoOverlay],
+	interactions: [...ol.interaction.defaults().getArray(), select]
 });
