@@ -1,8 +1,14 @@
 "use strict"
 
 var view = new ol.View({
-	center: [0,0],
-	zoom: 0
+	center: ol.proj.fromLonLat([114.119,22.337]),
+	resolution: 80,
+	maxResolution: 100,
+	extent: [
+		...ol.proj.fromLonLat([113.819,22.037]),
+		...ol.proj.fromLonLat([114.419,22.637])
+	],
+	constrainOnlyCenter: true
 });
 
 var geolocation = new ol.Geolocation({
@@ -42,7 +48,7 @@ var binPinLayer = new ol.layer.Vector({
 			})
 		})
 	}),
-	maxResolution: 3
+	maxResolution: 5
 });
 /**
 * bins.json
