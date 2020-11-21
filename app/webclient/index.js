@@ -64,6 +64,40 @@ fetch("./bins.json")
 		binPinLayer.setSource(new ol.source.Vector({features:bins}));
 	});
 
+var buildingLayer = new ol.layer.Vector({
+	style: new ol.style.Style({
+		image: new ol.style.Circle({
+			radius: 8,
+			fill: new ol.style.Fill({
+				color: "#99CC33"
+			}),
+			stroke: new ol.style.Stroke({
+				color: "#FFFFFF",
+				width: 2
+			})
+		})
+	}),
+	minResolution: 5,
+	maxResolution: 200
+});
+fetch("./point_ids.json")
+	.then(r => r.json())
+	// turn list of {lon:x,lat:y} into list of ol.Feature
+	.then(bs => {
+		return bs.map(b => {
+			let feature = new ol.Feature({
+				geometry: new ol.geom.Point(
+					ol.proj.fromLonLat([b.lon,b.lat])
+				)
+			})
+			feature.setId(b.id);
+			return feature;
+		})
+	})
+	.then(bs => {
+		buildingLayer.setSource(new ol.source.Vector({features:bs}));
+	});
+
 var map = new ol.Map({
 	target: "map",
 	layers: [
@@ -75,7 +109,8 @@ var map = new ol.Map({
 				features: [positionFeature]
 			})
 		}),
-		binPinLayer
+		binPinLayer,
+		buildingLayer
 	],
 	view: view
 });
