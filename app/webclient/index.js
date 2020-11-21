@@ -29,6 +29,34 @@ geolocation.on("change:position", function() {
 	positionFeature.setGeometry(coords ? new ol.geom.Point(coords) : null);
 });
 
+var binPinLayer = new ol.layer.Vector({
+	style: new ol.style.Style({
+		image: new ol.style.Circle({
+			radius: 8,
+			fill: new ol.style.Fill({
+				color: "#CC3399"
+			}),
+			stroke: new ol.style.Stroke({
+				color: "#FFFFFF",
+				width: 2
+			})
+		})
+	}),
+	maxResolution: 3
+});
+fetch("/bincoords/?returnall=true")
+	.then(r => r.json())
+	// turn list of {lon:x,lat:y} into list of ol.Feature
+	.then(bins => {
+		return bins.map(bin => ol.proj.fromLonLat([bin.lon,bin.lat]))
+			.map(coord => new ol.geom.Point(coord))
+			.map(geom => new ol.Feature({geometry: geom}));
+	})
+	// set binPinSource
+	.then(bins => {
+		binPinLayer.setSource(new ol.source.Vector({features:bins}));
+	});
+
 var map = new ol.Map({
 	target: "map",
 	layers: [
@@ -39,7 +67,8 @@ var map = new ol.Map({
 			source: new ol.source.Vector({
 				features: [positionFeature]
 			})
-		})
+		}),
+		binPinLayer
 	],
 	view: view
 });
