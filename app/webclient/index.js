@@ -44,13 +44,20 @@ var binPinLayer = new ol.layer.Vector({
 	}),
 	maxResolution: 3
 });
-fetch("/bincoords/?returnall=true")
+/**
+* bins.json
+* longitude and latitudes of waste separation bins.
+* Addresses from <www.wastereduction.gov.hk/en/quickaccess/vicinity.htm?collection_type=bin> passed through <geocodeapi.io>
+*/
+fetch("./bins.json")
 	.then(r => r.json())
 	// turn list of {lon:x,lat:y} into list of ol.Feature
 	.then(bins => {
-		return bins.map(bin => ol.proj.fromLonLat([bin.lon,bin.lat]))
-			.map(coord => new ol.geom.Point(coord))
-			.map(geom => new ol.Feature({geometry: geom}));
+		return bins.map(bin => new ol.Feature({
+			geometry: new ol.geom.Point(
+				ol.proj.fromLonLat([bin.lon,bin.lat])
+			),
+		}))
 	})
 	// set binPinSource
 	.then(bins => {
