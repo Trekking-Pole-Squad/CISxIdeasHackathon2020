@@ -12,14 +12,11 @@ fetch("/gettoken/?" + new URLSearchParams({
 	} else {
 		token = r.token;
 		fetch("/userdata/?" + new URLSearchParams({
-			token:token, tiles: true, inventory: true
+			token:token, tiles: true, inventory: true, buildables: true
 		}))
 			.then(r => r.json()).then(r => mergeUserData(r));
 	}
 })
-
-var tileTypes = {}
-fetch("/tiletypes/").then(r => r.json()).then(r => tileTypes = r);
 
 var view = new ol.View({
 	center: ol.proj.fromLonLat([114.119,22.337]),
@@ -173,9 +170,27 @@ var map = new ol.Map({
 });
 
 var buildings = {};
+var buildables = [];
 var inventory = [];
 
 function mergeUserData(data) {
+	function updateMenu(element,source) {
+		// clear menu items
+		while (element.firstChild) {
+			element.removeChild(element.firstChild);
+		}
+		// add menu items
+		for (let i of source) {
+			let e = document.createElement("DIV");
+			e.setAttribute("class","tilemenu-item");
+			e.innerHTML = i.name;
+			element.appendChild(e);
+		}
+	}
 	if (data.tiles) buildings = data.tiles;
 	if (data.inventory) inventory = data.inventory;
+	if (data.buildables) {
+		buildables = data.buildables;
+		updateMenu(document.getElementById("buildnew-menu"),buildables);
+	}
 }

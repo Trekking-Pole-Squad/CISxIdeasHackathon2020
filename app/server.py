@@ -26,7 +26,10 @@ async def output_user_inventory(token: str = ""):
     return return_value
 
 @app.get("/userdata/")
-async def get_user_tiles(token:str="",tiles:bool=False,inventory:bool=False):
+async def get_user_tiles(token:str="",
+        tiles:bool=False,
+        inventory:bool=False,
+        buildables:bool=False):
     if users.auth_token(token):
         return_value = {}
         username = users.user_from_token(token)
@@ -34,6 +37,8 @@ async def get_user_tiles(token:str="",tiles:bool=False,inventory:bool=False):
             return_value["tiles"] = users.get_tiles(username)
         if inventory:
             return_value["inventory"] = users.get_inventory(username)
+        if buildables:
+            return_value["buildables"] = users.get_buildables(username)
         return return_value
     else: raise HTTPException(status_code=403)
 

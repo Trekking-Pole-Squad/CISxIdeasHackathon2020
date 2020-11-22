@@ -16,6 +16,13 @@
 				border-radius: 10px;
 				padding: 15px;
 			}
+			.tilemenu {
+				display: flex;
+			}
+			.tilemenu-item {
+				margin: 10px;
+				border: 2px solid black;
+			}
 		</style>
 		<title>App</title>
 	</head>
@@ -24,6 +31,8 @@
 		<div id="plotinfodiv" class="plot-info-container">
 			<h2 id="plottitle"></h2>
 			<p id="plotdesc"></p>
+			<h3>Build New</h3>
+			<div id="buildnew-menu" class="tilemenu"></div>
 		</div>
 		<script src="./index.js"></script>
 	</body>

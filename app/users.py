@@ -1,6 +1,8 @@
 import pickle
 from secrets import token_urlsafe
 
+import tiles
+
 class User():
     def __init__(self, name, sha512_password):
         self.name = name
@@ -52,3 +54,8 @@ class Users():
         user = next((u for u in self.users if u.name == name),None)
         if user is not None:
             return user.tiles
+
+    def get_buildables(self,name):
+        user = next((u for u in self.users if u.name == name),None)
+        if user is not None:
+            return tiles.get_buildables(user.tiles.values())
