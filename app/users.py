@@ -10,6 +10,10 @@ class User():
         self.inventory = []
         self.token = False
         self.tiles = {}
+        self.points = 0
+
+class GameError(Exception):
+    pass
 
 class Users():
     def __init__(self):
@@ -63,8 +67,13 @@ class Users():
     def create_in_inventory(self,name,type):
         user = next((u for u in self.users if u.name == name),None)
         if user is not None:
-            user.inventory.append(tiles.create_tile(type))
-            pickle.dump(self.users,open("users.pickle","wb+"))
+            cost = tiles.get_tile_by_type(type)["cost"]
+            if user.points >= cost:
+                user.points -= cost
+                user.inventory.append(tiles.create_tile(type))
+                pickle.dump(self.users,open("users.pickle","wb+"))
+            else:
+                raise GameError("Not Enough Points")
 
     def swap_tile_inventory(self,name,tileid,invidx):
         user = next((u for u in self.users if u.name == name),None)
@@ -80,3 +89,8 @@ class Users():
             else:
                 user.inventory[invidx] = newinv
             pickle.dump(self.users,open("users.pickle","wb+"))
+
+    def get_points(self,name):
+        user = next((u for u in self.users if u.name == name),None)
+        if user is not None:
+            return user.points

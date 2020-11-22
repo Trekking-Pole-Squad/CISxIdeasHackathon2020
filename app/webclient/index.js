@@ -12,7 +12,7 @@ fetch("/gettoken/?" + new URLSearchParams({
 	} else {
 		token = r.token;
 		fetch("/userdata/?" + new URLSearchParams({
-			token:token, tiles: true, inventory: true, buildables: true
+			token:token, tiles: true, inventory: true, buildables: true, points: true
 		}))
 			.then(r => r.json()).then(r => mergeUserData(r));
 	}
@@ -149,6 +149,7 @@ select.on("select", function(evt) {
 	}
 });
 
+var score = 0;
 
 var map = new ol.Map({
 	target: "map",
@@ -192,6 +193,10 @@ function mergeUserData(data) {
 			element.appendChild(e);
 		}
 	}
+	if (data.points) {
+		score = data.points;
+		document.getElementById("score").innerHTML = score;
+	}
 	if (data.tiles) buildings = data.tiles;
 	if (data.inventory) {
 		inventory = data.inventory;
@@ -221,7 +226,10 @@ function mergeUserData(data) {
 						tile: select.getFeatures().getArray()[0].getId(),
 						type: buildable.name
 					})
-				})
+				}).then(r => {
+					if (r.status >= 400) alert("Not Enough Points");
+					return r;
+				});
 			}
 		);
 	}
