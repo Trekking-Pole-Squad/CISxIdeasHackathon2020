@@ -7,11 +7,12 @@ class User():
         self.sha512_password = sha512_password
         self.inventory = []
         self.token = False
-        
+        self.tiles = {}
+
 class Users():
     def __init__(self):
         self.users = pickle.load(open("users.pickle","rb"))
-    
+
     def add(self, name, sha512_password):
         if name not in map(lambda user: user.name, self.users):
             self.users.append(User(name, sha512_password))
@@ -46,3 +47,8 @@ class Users():
         if name in map(lambda user: user.name,self.users):
             return_value = self.users[list(map(lambda user: user.name,self.users)).index(name)].inventory
         return return_value
+
+    def get_tiles(self,name):
+        user = next((u for u in self.users if u.name == name),None)
+        if user is not None:
+            return user.tiles

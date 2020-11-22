@@ -11,6 +11,10 @@ fetch("/gettoken/?" + new URLSearchParams({
 		alert("Login fail");
 	} else {
 		token = r.token;
+		fetch("/userdata/?" + new URLSearchParams({
+			token:token, tiles: true, inventory: true
+		}))
+			.then(r => mergeUserData(r.json()));
 	}
 })
 
@@ -160,3 +164,11 @@ var map = new ol.Map({
 	overlays: [plotInfoOverlay],
 	interactions: [...ol.interaction.defaults().getArray(), select]
 });
+
+var buildings = {};
+var inventory = [];
+
+function mergeUserData(data) {
+	if (data.tiles) buildings = data.tiles;
+	if (data.inventory) inventory = data.inventory;
+}
