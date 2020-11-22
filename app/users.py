@@ -59,3 +59,24 @@ class Users():
         user = next((u for u in self.users if u.name == name),None)
         if user is not None:
             return tiles.get_buildables(user.tiles.values())
+
+    def create_in_inventory(self,name,type):
+        user = next((u for u in self.users if u.name == name),None)
+        if user is not None:
+            user.inventory.append(tiles.create_tile(type))
+            pickle.dump(self.users,open("users.pickle","wb+"))
+
+    def swap_tile_inventory(self,name,tileid,invidx):
+        user = next((u for u in self.users if u.name == name),None)
+        if user is not None:
+            newtile = user.inventory[invidx] if len(user.inventory) > invidx else None
+            newinv = user.tiles.get(tileid,None)
+            if newtile is None:
+                del user.tiles[tileid]
+            else:
+                user.tiles[tileid] = newtile
+            if newinv is None:
+                del user.inventory[invidx]
+            else:
+                user.inventory[invidx] = newinv
+            pickle.dump(self.users,open("users.pickle","wb+"))

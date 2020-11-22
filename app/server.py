@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 from users import *
 import asyncio
 
@@ -41,6 +42,17 @@ async def get_user_tiles(token:str="",
             return_value["buildables"] = users.get_buildables(username)
         return return_value
     else: raise HTTPException(status_code=403)
+
+class RequestBuildNew(BaseModel):
+    tile: int
+    type: str
+@app.put("/buildnew/")
+async def build_new_tile(token:str,body:RequestBuildNew):
+    if users.auth_token(token):
+        name = users.user_from_token(token)
+        users.create_in_inventory(name,body.type)
+        users.swap_tile_inventory(name,body.tile,-1) # last appended item
+        return await get_user_tiles(token,tiles=True,inventory=True)
 
 app.mount("/webclient",StaticFiles(directory="webclient"))
 

@@ -174,7 +174,7 @@ var buildables = [];
 var inventory = [];
 
 function mergeUserData(data) {
-	function updateMenu(element,source) {
+	function updateMenu(element,source,fetchFunc) {
 		// clear menu items
 		while (element.firstChild) {
 			element.removeChild(element.firstChild);
@@ -184,6 +184,11 @@ function mergeUserData(data) {
 			let e = document.createElement("DIV");
 			e.setAttribute("class","tilemenu-item");
 			e.innerHTML = i.name;
+			e.addEventListener("click", function() {
+				fetchFunc(i).then(r => r.json()).then(r => mergeUserData(r));
+				// hide overlay
+				plotInfoOverlay.setPosition(undefined);
+			});
 			element.appendChild(e);
 		}
 	}
@@ -191,6 +196,18 @@ function mergeUserData(data) {
 	if (data.inventory) inventory = data.inventory;
 	if (data.buildables) {
 		buildables = data.buildables;
-		updateMenu(document.getElementById("buildnew-menu"),buildables);
+		updateMenu(
+			document.getElementById("buildnew-menu"),
+			buildables,
+			function(buildable) {
+				return fetch("/buildnew/?token="+token,{
+					method: "PUT",
+					body: JSON.stringify({
+						tile: select.getFeatures().getArray()[0].getId(),
+						type: buildable.name
+					})
+				})
+			}
+		);
 	}
 }
