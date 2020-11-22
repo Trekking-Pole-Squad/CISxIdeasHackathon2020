@@ -14,7 +14,7 @@ fetch("/gettoken/?" + new URLSearchParams({
 		fetch("/userdata/?" + new URLSearchParams({
 			token:token, tiles: true, inventory: true
 		}))
-			.then(r => mergeUserData(r.json()));
+			.then(r => r.json()).then(r => mergeUserData(r));
 	}
 })
 
