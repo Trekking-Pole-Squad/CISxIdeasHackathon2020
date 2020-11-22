@@ -193,7 +193,22 @@ function mergeUserData(data) {
 		}
 	}
 	if (data.tiles) buildings = data.tiles;
-	if (data.inventory) inventory = data.inventory;
+	if (data.inventory) {
+		inventory = data.inventory;
+		updateMenu(
+			document.getElementById("buildinv-menu"),
+			inventory,
+			function(tile) {
+				return fetch("/swaptile/?token="+token,{
+					method: "PUT",
+					body: JSON.stringify({
+						tile: select.getFeatures().getArray()[0].getId(),
+						inventory: inventory.indexOf(tile)
+					})
+				});
+			}
+		);
+	}
 	if (data.buildables) {
 		buildables = data.buildables;
 		updateMenu(

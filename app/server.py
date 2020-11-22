@@ -53,6 +53,14 @@ async def build_new_tile(token:str,body:RequestBuildNew):
         users.create_in_inventory(name,body.type)
         users.swap_tile_inventory(name,body.tile,-1) # last appended item
         return await get_user_tiles(token,tiles=True,inventory=True)
+class RequestSwapTile(BaseModel):
+    tile: int
+    inventory: int
+@app.put("/swaptile/")
+async def swap_tile(token:str,body:RequestSwapTile):
+    if users.auth_token(token):
+        users.swap_tile_inventory(users.user_from_token(token),body.tile,body.inventory)
+        return await get_user_tiles(token,tiles=True,inventory=True)
 
 app.mount("/webclient",StaticFiles(directory="webclient"))
 
