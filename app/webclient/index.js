@@ -18,6 +18,9 @@ fetch("/gettoken/?" + new URLSearchParams({
 	}
 })
 
+var tileTypes = {}
+fetch("/tiletypes/").then(r => r.json()).then(r => tileTypes = r);
+
 var view = new ol.View({
 	center: ol.proj.fromLonLat([114.119,22.337]),
 	resolution: 80,
@@ -123,10 +126,8 @@ fetch("./point_ids.json")
 	});
 
 
-var plotInfoDiv = document.createElement("DIV");
-plotInfoDiv.setAttribute("class","plot-info-container")
 var plotInfoOverlay = new ol.Overlay({
-	element: plotInfoDiv
+	element: document.getElementById("plotinfodiv")
 });
 
 var select = new ol.interaction.Select({
@@ -139,6 +140,12 @@ select.on("select", function(evt) {
 		plotInfoOverlay.setPosition(
 			evt.selected[0].getGeometry().getCoordinates()
 		);
+		let tile = buildings[evt.selected[0].getId()];
+		if (!tile) {
+			tile = {name:"Empty Tile",description:"Put something here"};
+		}
+		document.getElementById("plottitle").innerHTML = tile.name;
+		document.getElementById("plotdesc").innerHTML = tile.description;
 	}
 	else if (evt.deselected.length > 0) {
 		plotInfoOverlay.setPosition(undefined);
